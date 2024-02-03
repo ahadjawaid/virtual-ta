@@ -1,6 +1,8 @@
 export const paths = {
     "register": "/register",
+    "login": "/login",
     "forgotPassword": "/forgot-password", 
+    "registerationSuccess": "/dashboard",
 }
 
 export const signInOptions = [
