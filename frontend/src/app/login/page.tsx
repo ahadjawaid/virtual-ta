@@ -1,10 +1,10 @@
 "use client";
 import AuthOutlet from "@/outlets/AuthOutlet"
-import { paths, signInOptions } from '@/config';
 import AccountButton from '@/components/AccountButton';
 import WordDivider from "@/components/WordDivider";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
+import { paths, signInOptions } from '@/config';
 
 export default function Home() {
   return (
