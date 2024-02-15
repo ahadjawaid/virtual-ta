@@ -1,4 +1,4 @@
-// import { userFriendlyErrorCodes } from "../services/firebase";
+import { userFriendlyErrorCodes } from "@/services/firebase";
 
 type InputProps = {
     type: string;
@@ -33,7 +33,7 @@ export default function Input(props: InputProps) {
             />
             {props.error ? (
                 <p className={"text-red-600 text-sm text-medium"}>
-                    {/* {userFriendlyErrorCodes[props.error.code]} */}
+                    {userFriendlyErrorCodes[props.error.code]}
                 </p>
             ): null}
         </div>

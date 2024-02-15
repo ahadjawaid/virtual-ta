@@ -10,8 +10,6 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -20,14 +18,36 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Setting up Firebase
 
-To learn more about Next.js, take a look at the following resources:
+This project uses [Firebase](https://firebase.google.com/) for authentication and database. To initialize Firebase, you need to create a `.env` file in the root directory and add the following environment variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+API_KEY=
+AUTH_DOMAIN=
+PROJECT_ID=
+STORAGE_BUCKET=
+MESSAGING_SENDER_ID=
+APP_ID=
+MEASUREMENT_ID=
+DATABASE_URL=
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+And to initialize Firebase Emulator, run the following command:
+
+```
+firebase init
+```
+
+```
+
+## Running Firebase Emulator
+
+```
+firebase emulators:start
+```
+
+For more information check out the [docs](https://firebase.google.com/docs/emulator-suite/connect_auth) for more details.
 
 ## Deploy on Vercel
 

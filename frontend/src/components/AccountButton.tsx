@@ -1,5 +1,5 @@
 type AccountButtonProps = {
-    onClick: () => void;
+    onClick: any;
     name: string;
     logo: string | JSX.Element;
 }
