@@ -1,6 +1,9 @@
 from flask import Flask
+import chromadb
 
 app = Flask(__name__)
+
+chroma = chromadb.PersistentClient(path="chromadb")
 
 @app.route("/")
 def home():
