@@ -30,7 +30,7 @@ const teams = [
   { id: 3, name: 'CS 4314', initial: 'C', current: false },
 ].map(team => ({
   ...team,
-  href: `/class/${team.name.split(' ')[1]}`, // because the class page uses the class id number
+  href: `/class/${team.name.split(' ')[0]}-${team.name.split(' ')[1]}`, // because the class page uses the class id number
 }));
 
 const userNavigation = [
