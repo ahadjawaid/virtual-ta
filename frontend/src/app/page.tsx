@@ -25,13 +25,17 @@ const navigation = [
   // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
 ]
 const teams = [
-  { id: 1, name: 'CS 4485', href: '#', initial: 'C', current: false },
-  { id: 2, name: 'CS 4365', href: '#', initial: 'C', current: false },
-  { id: 3, name: 'CS 4314', href: '#', initial: 'C', current: false },
-]
+  { id: 1, name: 'CS 4485', initial: 'C', current: false },
+  { id: 2, name: 'CS 4365', initial: 'C', current: false },
+  { id: 3, name: 'CS 4314', initial: 'C', current: false },
+].map(team => ({
+  ...team,
+  href: `/class/${team.name.split(' ')[0]}-${team.name.split(' ')[1]}`, // because the class page uses the class id number
+}));
+
 const userNavigation = [
-  { name: 'Your profile', href: '#' },
-  { name: 'Sign out', href: '#' },
+  { name: 'Your profile', href: '/profile' },
+  { name: 'Sign out', href: '/login' },
 ]
 
 function classNames(...classes: any) {
@@ -149,7 +153,7 @@ export default function Example() {
                         </li>
                         <li className="mt-auto">
                           <a
-                            href="#"
+                            href="/settings"
                             className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
                           >
                             <Cog6ToothIcon
@@ -226,7 +230,7 @@ export default function Example() {
                 </li>
                 <li className="mt-auto">
                   <a
-                    href="#"
+                    href="/settings"
                     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
                   >
                     <Cog6ToothIcon
