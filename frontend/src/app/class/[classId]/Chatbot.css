@@ -37,7 +37,7 @@
     border: 1px solid #ccc;
   }
   
-  button {
+  .chatbot-send {
     width: 70px;
     padding: 10px;
     border-radius: 20px;
