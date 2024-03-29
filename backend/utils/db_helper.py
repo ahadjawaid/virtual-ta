@@ -12,13 +12,10 @@ def add_to_collection(course: str, data: Data):
 
     c = client.get_or_create_collection(course)
 
-    documents = [doc.page_content for doc in data.documents]
     embeddings = data.embeddings
-    metadatas = [doc.metadata for doc in data.documents]
     ids = [f"{course}_{i}" for i in range(data.documents)]
 
-    c.add(documents=documents,
-            metadatas=metadatas,
+    c.add_documents(documents=data.documents,
             embeddings=embeddings,
             ids=ids)
     

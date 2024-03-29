@@ -4,7 +4,7 @@ from langchain.text_splitter import MarkdownHeaderTextSplitter
 from langchain_core.documents.base import Document
 
 def get_course(text: str) -> str:
-    course = re.search(r'([A-Z][A-Z][A-Z]?[A-Z]?\d\d\d\d\.[A-Z0-9][A-Z0-9]\d)', text)
+    course = re.search(r'([A-Z][A-Z][A-Z]?[A-Z]?\s?\d[A-Z0-9]\d\d\.[A-Z0-9][A-Z0-9]\d)', text)
     return course.group() if course else ""
 
 def chunk_text(text: str) -> list[Document]:
