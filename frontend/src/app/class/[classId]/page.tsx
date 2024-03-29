@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import './Chatbot.css'; // Import CSS file for styling
-
+import Sidebar from '@/components/Sidebar/Sidebar'
 // Define the type for a message
 type Message = {
   text: string;
@@ -32,7 +32,8 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="chatbot-container">
+    <>
+    <div className="container">
       <div className="chat-messages">
         {messages.map((message, index) => (
           <div key={index} className={`message ${message.sender}`}>
@@ -48,6 +49,7 @@ const Chatbot = () => {
       />
       <button onClick={sendMessage}>Send</button>
     </div>
+    </>
   );
 };
 

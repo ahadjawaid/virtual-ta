@@ -15,7 +15,7 @@ export const signInOptions = [
 
 export const logo = {
     "link": "/",
-    "path": "logo.svg",
+    "path": "../logo.svg",
     "text": "Virtual",
     "coloredText": "TA"
 }

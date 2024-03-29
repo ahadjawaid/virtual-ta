@@ -1,19 +1,20 @@
 // Sidebar.tsx
-import React, { Fragment, useState } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import Logo from '@/components/Logo';
+import { Fragment, useState } from 'react'
+import { Dialog, Menu, Transition } from '@headlessui/react'
 import {
-    Bars3Icon,
-    BellIcon,
-    CalendarIcon,
-    ChartPieIcon,
-    Cog6ToothIcon,
-    DocumentDuplicateIcon,
-    FolderIcon,
-    HomeIcon,
-    UsersIcon,
-    XMarkIcon,
-  } from '@heroicons/react/24/outline'
+  Bars3Icon,
+  BellIcon,
+  CalendarIcon,
+  ChartPieIcon,
+  Cog6ToothIcon,
+  DocumentDuplicateIcon,
+  FolderIcon,
+  HomeIcon,
+  UsersIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline'
+import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import Logo from '@/components/Logo';
 
 const navigation = [
     { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
