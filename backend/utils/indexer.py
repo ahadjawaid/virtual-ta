@@ -1,7 +1,10 @@
 import re
 
 from langchain.text_splitter import MarkdownHeaderTextSplitter
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents.base import Document
+
+embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 
 def get_course(text: str) -> str:
     course = re.search(r'([A-Z][A-Z][A-Z]?[A-Z]?\s?\d[A-Z0-9]\d\d\.[A-Z0-9][A-Z0-9]\d)', text)
@@ -19,6 +22,3 @@ def chunk_text(text: str) -> list[Document]:
         ]
     )
     return splitter.split_text(text)
-
-def generate_embeddings(text_chunks: list[Document]) -> list:
-    pass

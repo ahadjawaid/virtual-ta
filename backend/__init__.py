@@ -7,7 +7,6 @@ from langchain.chains import RetrievalQA
 from transformers import BitsAndBytesConfig
 from flask import Flask, jsonify
 
-import chromadb
 import torch
 import time
 
