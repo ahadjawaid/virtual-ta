@@ -5,11 +5,13 @@ import os
 from langchain_pinecone.vectorstores import PineconeVectorStore
 from langchain_core.documents.base import Document
 from pinecone import PodSpec, Pinecone as PineconeClient
+from dotenv import load_dotenv
 
 from indexer import embeddings
 
+load_dotenv()
 pc = PineconeClient(
- api_key=os.getenv("PINECONE_API_KEY")
+ api_key=os.environ["PINECONE_API_KEY"]
 )
 
 index_name = ""
