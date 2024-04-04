@@ -17,6 +17,7 @@ import {
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import Logo from '@/components/Logo';
 import Chatbot from '@/app/class/[classId]/page';
+import ChatInterface from "@/components/ChatInterface";
 
 
 const navigation = [
@@ -192,7 +193,7 @@ export default function Example() {
 
           <main className="">
             <div>
-              <Chatbot />
+              <ChatInterface />
             </div>
           </main>
         </div>
