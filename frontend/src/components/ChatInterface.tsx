@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import "./ChatInterface.css";
 
 //import { getConversation, sendMessage, clearConversation } from "@/lib/action";
 
@@ -59,23 +60,15 @@ export default function ChatInterface() {
 
   return (
     <>
+    <div className='chat-container'>
       <div className="flex justify-between">
         <h2 className="text-xl font-semibold leading-6 text-gray-900">
-          Chatting
+          Virtual TA
         </h2>
-
-        <div className="flex gap-3">
-          <button onClick={clearHistory}>
-            Clear History
-          </button>
-          <button onClick={switchUser}>
-            Switch User
-          </button>
-        </div>
       </div>
-
-      <div className="flex flex-col gap-4">
-        <div className="bg-gray-100 lg:fixed lg:bottom-32 lg:right-100 lg:top-28 lg:w-7/12 lg:overflow-y-auto">
+    </div>
+      <div className="form-container">
+        <div className="bg-gray-300 lg:fixed lg:bottom-32 lg:right-100 lg:top-28 lg:w-8/12 lg:overflow-y-auto">
           {messages.map((message, index) => (
             <div key={index} className="p-3">
               <p className="text-md">
@@ -85,16 +78,18 @@ export default function ChatInterface() {
             </div>
           ))}
         </div>
+      </div>
+        <div className="submit-bar" >
         <form onSubmit={onSubmitMessage}>
-          <div className="lg:fixed lg:bottom-20 lg:w-7/12">
+          <div className="lg:fixed lg:bottom-20 lg:w-8/12">
             <div className="col-span-full">
-              <div className="mt-2 flex gap-2">
+              <div className="flex">
                 <input
                   type="text"
                   name="message"
                   id="message"
                   autoComplete="off"
-                  className="block w-full px-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                  className="input-bar"
                 />
                 <button>
                   <ArrowRightIcon className="h-6 text-gray-500" />

@@ -1,0 +1,33 @@
+.chat-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 15px;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-bar {
+    display: flex;
+    margin-left: 175px;
+}
+
+/* Define a class for the input bar */
+.input-bar {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #e2e8f0;
+    background-color: #fff;
+    color: #4a5568;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  
