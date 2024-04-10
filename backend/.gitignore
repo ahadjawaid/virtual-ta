@@ -2,5 +2,6 @@
 /output/*
 /samples/*
 /.vscode/*
+/utils/__pycache__/*
 
 .env

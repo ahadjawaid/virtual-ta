@@ -32,6 +32,12 @@ class Table:
         self.rows = []
 
 def read_pdf(path: str) -> str:
+    filename = Path(path).stem
+    path = os.path.join(base_path, "output", f"{filename}_output.zip")
+    
+    if os.path.exists(path=path):
+        return path
+
     try:
         # Initial setup, create credentials instance.
         credentials = Credentials.service_principal_credentials_builder(). \
@@ -157,10 +163,7 @@ if __name__ == '__main__':
 
         try:
             print("Loading...")
-            output_path = os.path.join(base_path, "output", Path(filepath).stem+"_output.zip")
-            if not os.path.exists(output_path):
-                print("Calling Adobe PDF extraction...")
-                output_path = read_pdf(filepath)
+            output_path = read_pdf(filepath)
             result_text = read_elements_from_zip(output_path)
             with open(os.path.join(base_path, "output", Path(filepath).stem + "_output.md"), \
                     "w", encoding="utf-8") as f:
@@ -180,10 +183,7 @@ if __name__ == '__main__':
             for filepath in [f for f in filenames if f.endswith(".pdf")]:
                 try:
                     print("Parsing:", filepath)
-                    output_path = os.path.join(base_path, "output", Path(filepath).stem+"_output.zip")
-                    if not os.path.exists(output_path):
-                        print("Calling Adobe PDF extraction...")
-                        output_path = read_pdf(os.path.join(root,filepath))
+                    output_path = read_pdf(os.path.join(root,filepath))
                     result_text = read_elements_from_zip(output_path)
                     with open(os.path.join(base_path, "output", Path(filepath).stem + "_output.md"), \
                             "w", encoding="utf-8") as f:
