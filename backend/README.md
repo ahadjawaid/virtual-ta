@@ -14,6 +14,7 @@ The following commands upsert PDF files into our database:
 
 `python upsert_data.py [dirname]`
 
+
 ## Preprocess a syllabus
 This project uses Adobe Extract PDF Services to perform high-quality PDF file parsing.
 Use `template.env` as a reference to get the required credentials and set the environment variables.
