@@ -3,5 +3,7 @@
 /samples/*
 /.vscode/*
 /utils/__pycache__/*
+/__pycache__/*
 
+to-uninstall.txt
 .env

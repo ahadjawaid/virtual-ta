@@ -14,11 +14,8 @@ client = chromadb.PersistentClient(path=DB_PATH)
 # The embeddings take a few seconds to load
 embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 
-def add_to_collection(course: str, documents: list[Document]) -> None:
-    """
-    Adds Documents to a collection in the Chroma DB
-    """
-    vectorstore = Chroma(
+def get_collection(course: str) -> Chroma:
+    return Chroma(
         persist_directory=DB_PATH,
         embedding_function=embeddings,
         collection_name=course,
@@ -26,6 +23,11 @@ def add_to_collection(course: str, documents: list[Document]) -> None:
         client=client,
     )
 
+def add_to_collection(course: str, documents: list[Document]) -> None:
+    """
+    Adds Documents to a collection in the Chroma DB
+    """
+    vectorstore = get_collection(course=course)
     vectorstore.add_documents(documents=documents)
 
 def clear_collection(course: str) -> None:
@@ -49,13 +51,7 @@ def collection_count(course: str) -> int:
     """
     Returns number of Documents in the collection
     """
-    vectorstore = Chroma(
-        persist_directory=DB_PATH,
-        embedding_function=embeddings,
-        collection_name=course,
-        collection_metadata={"hnsw:space": "cosine"},
-        client=client,
-    )
+    vectorstore = get_collection(course=course)
     return vectorstore._collection.count()
 
 def list_collections() -> list[str]:

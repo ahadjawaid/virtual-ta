@@ -1,23 +1,22 @@
-from langchain.vectorstores import FAISS
-from langchain.llms import VLLM
-from langchain.embeddings import HuggingFaceEmbeddings
+import time
+
+import torch
+from langchain_community.llms import VLLM
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from transformers import BitsAndBytesConfig
 from flask import Flask, jsonify
 
-import torch
-import time
+from utils import chroma_client
+
 
 app = Flask(__name__)
 
-def get_data():
-   # embedding engine
-   embedding = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+def get_data(course: str):
 
-   # I used local database for testing. Chroma needs to implemented
-   db = FAISS.load_local("gs-qs-vector", embeddings=embedding)
+   # Chroma collection instance
+   db = chroma_client.get_collection(course=course)
 
    return db
 
@@ -49,7 +48,7 @@ def agent(db, llm):
    # Best prompt I could do
    prompt_template = """
    Given the following text by user, extract the part that is unbiased and not their opinion, so that using
-   text alone would be good context for providing an unbiased aanswer to question portion of the text.
+   text alone would be good context for providing an unbiased answer to question portion of the text.
 
    Please include the actual question or query that the user is asking. Separate this into two categories
    labeled with \"Unbiased text context (includes all content except user's bias):\" and \"Question/Query
@@ -80,11 +79,11 @@ def agent(db, llm):
 
    return qa
 
-@app.route("/inference")
-def inference(question):
+@app.route("/inference/<course>")
+def inference(course, question):
    # Record the start time
    start_time = time.time()
-   db = get_data()
+   db = get_data(course)
    llm = model()
 
    qa = agent(db, llm)
