@@ -6,14 +6,11 @@
 }
 
 .form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    border: 2px solid red;
 }
 
 .submit-bar {
     display: flex;
-    margin-left: 175px;
 }
 
 /* Define a class for the input bar */
