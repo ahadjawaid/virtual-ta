@@ -1,5 +1,5 @@
-import { useState, KeyboardEvent } from 'react';
-import { HomeIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import { HomeIcon, Cog6ToothIcon, EllipsisHorizontalIcon} from '@heroicons/react/24/outline';
 import Logo from '@/components/Logo';
 
 const navigation = [
@@ -39,6 +39,45 @@ const Sidebar = () => {
         setShowInput(false); // Hide input field after adding team
     };
 
+    // State to manage the position of the modal
+    const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleEllipsisClick = (event) => {
+        event.preventDefault();
+        const buttonRect = event.currentTarget.getBoundingClientRect();
+
+        setModalPosition({
+            x: buttonRect.left,
+            y: buttonRect.bottom,
+        });
+
+        setIsModalOpen(true);
+    };
+
+
+    // Close the modal
+    const modalRef = useRef(null); // Ref for the modal div
+
+    useEffect(() => {
+        // detect click outside of modal to close it
+        function handleClickOutside(event) {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                setIsModalOpen(false);
+            }
+        }
+
+        // If the modal is open add event listener
+        if (isModalOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        // clean up
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isModalOpen]);
+
     return (
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
@@ -75,21 +114,38 @@ const Sidebar = () => {
                             <div className="text-xs font-semibold leading-6 text-indigo-200">Your classes</div>
                             <ul role="list" className="-mx-2 mt-2 space-y-1">
                                 {teams.map((team) => (
-                                    <li key={team.name}>
+                                    <li key={team.name} className="group flex items-center justify-between rounded-md p-2 text-sm font-semibold leading-6 hover:bg-indigo-700">
                                         <a
                                             href={team.href}
                                             className={classNames(
-                                                team.current
-                                                    ? 'bg-indigo-700 text-white'
-                                                    : 'text-indigo-200 hover:text-white hover:bg-indigo-700',
-                                                'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                                                team.current ? 'bg-indigo-700 text-white' : 'text-indigo-200 hover:text-white hover:bg-indigo-700',
+                                                'flex items-center space-x-3'
                                             )}
                                         >
-                                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                                            <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
                                                 {team.initial}
                                             </span>
                                             <span className="truncate">{team.name}</span>
                                         </a>
+                                        <button
+                                            onClick={(event) => handleEllipsisClick(event)}
+                                            className="opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                            aria-label="Options"
+                                        >
+                                            <EllipsisHorizontalIcon className="h-5 w-5 text-indigo-200 hover:text-white" />
+                                        </button>
+                                        {isModalOpen && (
+                                            <div
+                                                className="absolute z-10 w-32 py-2 bg-white rounded shadow-lg"
+                                                style={{ top: `${modalPosition.y - 5}px`, left: `${modalPosition.x + 20}px` }}
+                                                ref={modalRef}
+                                            >
+                                                <ul className="text-gray-700">
+                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rename</li>
+                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Delete</li>
+                                                </ul>
+                                            </div>
+                                        )}
                                     </li>
                                 ))}
                                 {!showInput && (
