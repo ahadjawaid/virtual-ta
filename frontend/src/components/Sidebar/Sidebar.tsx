@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import { useState, KeyboardEvent, useRef, useEffect, MouseEvent } from 'react';
 import { HomeIcon, Cog6ToothIcon, EllipsisHorizontalIcon} from '@heroicons/react/24/outline';
 import Logo from '@/components/Logo';
 
@@ -43,7 +43,7 @@ const Sidebar = () => {
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleEllipsisClick = (event) => {
+    const handleEllipsisClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         const buttonRect = event.currentTarget.getBoundingClientRect();
 
@@ -61,8 +61,8 @@ const Sidebar = () => {
 
     useEffect(() => {
         // detect click outside of modal to close it
-        function handleClickOutside(event) {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
+        function handleClickOutside(event: { target: any; }) {
+            if ((modalRef.current as unknown as HTMLElement) && !(modalRef.current as unknown as HTMLElement).contains(event.target)) {
                 setIsModalOpen(false);
             }
         }
@@ -134,20 +134,19 @@ const Sidebar = () => {
                                         >
                                             <EllipsisHorizontalIcon className="h-5 w-5 text-indigo-200 hover:text-white" />
                                         </button>
-                                        {isModalOpen && (
-                                            <div
-                                                className="absolute z-10 w-32 py-2 bg-white rounded shadow-lg"
-                                                style={{ top: `${modalPosition.y - 5}px`, left: `${modalPosition.x + 20}px` }}
-                                                ref={modalRef}
-                                            >
-                                                <ul className="text-gray-700">
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rename</li>
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Delete</li>
-                                                </ul>
-                                            </div>
-                                        )}
                                     </li>
                                 ))}
+                                {isModalOpen && (<div
+                                        className="absolute z-10 w-32 py-2 bg-white rounded shadow-lg text-sm font-semibold"
+                                        style={{ top: `${modalPosition.y - 5}px`, left: `${modalPosition.x + 20}px` }}
+                                        ref={modalRef}
+                                    >
+                                        <ul className="text-gray-700">
+                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rename</li>
+                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Delete</li>
+                                        </ul>
+                                    </div>
+                                    )}
                                 {!showInput && (
                                     <li
                                         className="text-indigo-200 hover:text-white hover:bg-indigo-700 rounded-md p-2 text-sm font-semibold leading-6 cursor-pointer group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
