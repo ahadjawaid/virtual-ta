@@ -1,15 +1,20 @@
+import os
 import time
 
 import torch
 from langchain_community.llms import VLLM
 from langchain.chains.question_answering import load_qa_chain
+from langchain_community.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from transformers import BitsAndBytesConfig
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+from dotenv import load_dotenv
 
 from utils import chroma_client
 
+load_dotenv()
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
 app = Flask(__name__)
 
@@ -66,7 +71,7 @@ def agent(db, llm):
    chain_type_kwargs = {"prompt": PROMPT}
 
    retriever = db.as_retriever(
-      search_kwargs = {'k': 3}, # Top 3 similar to question
+      search_kwargs = {'k': 7}, # Top 3 similar to question
       chain_type_kwargs = chain_type_kwargs,
       return_source_documents = True
    )
@@ -100,6 +105,45 @@ def inference(course, question):
    #print(f"Elapsed Time: {elapsed_time} seconds")
 
    return jsonify({"message": ans["result"]})
+
+@app.route("/chat/<course>")
+def chat(course: str):
+   response = {}
+
+   try:
+      db = get_data(course)
+      llm = ChatOpenAI(model="gpt-3.5-turbo-0125", 
+                  temperature=0.1, 
+                  api_key=OPENAI_API_KEY,
+                  )
+      qa = agent(db, llm)
+      
+      if request.method == 'POST':
+         question = request.form['question']
+      else:
+         question = "Hello! Please explain how to contact the professor."
+
+      ans = qa({'query':question})
+      docs = db.similarity_search(question, k=7)
+      response["result"] = ans["result"]
+      response["prompt"] = {
+         "context":[doc.page_content for doc in docs],
+         "question": question,
+                           }
+   except Exception as e:
+      response["error"] = {
+         "code": 500,
+         "text": str(e),
+      }
+
+   return jsonify(response)
+
+@app.route("/courses")
+def courses():
+   response = {
+      "courses": chroma_client.list_collections(),
+   }
+   return jsonify(response)
 
 if __name__ == "__main__":
    app.run(host="0.0.0.0", port=8000, debug=True)
