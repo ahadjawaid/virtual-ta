@@ -3,6 +3,10 @@
 ## Run Flask Server
 `python __init__.py`
 
+### Endpoints
+- `/courses`: list of courses stored in database.
+- `/chat/<course>`: chat with course. 
+   - POST Data: `question`
 
 ## Upsert Data to Vectorstore
 We use Chroma db to store our RAG files.
