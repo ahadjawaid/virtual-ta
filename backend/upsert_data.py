@@ -20,9 +20,12 @@ def process_pdf(pdf_path):
     print("Number of chunks:", len(docs))
 
     # Add the extracted data to the Chroma database
-    if chroma_client.collection_count(course_id) != 0:
-        print("Collection not empty; resetting data")
-        chroma_client.clear_collection(course_id)
+    try:
+        if chroma_client.collection_count(course_id) != 0:
+            print("Collection not empty; resetting data")
+            chroma_client.clear_collection(course_id)
+    except:
+        print("Collection does not exist. Creating new collection.")
     
     print("Adding to collection:")
     chroma_client.add_to_collection(course=course_id, documents=docs)
