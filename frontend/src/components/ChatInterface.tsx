@@ -27,22 +27,49 @@ export default function ChatInterface() {
     event.preventDefault();
     const messageText = event.currentTarget["message"].value;
     event.currentTarget["message"].value = "";
-
+  
     // Add the submitted message to the messages state
     setMessages(prevMessages => [
       ...prevMessages,
       { user: "student", text: messageText }
     ]);
-
-    // Dummy response from backend
-    const dummyResponse = "This is a dummy response from the backend";
-
-    // Add the dummy response to the messages state
-    setMessages(prevMessages => [
-      ...prevMessages,
-      { user: "TA", text: dummyResponse }
-    ]);
-  }
+  
+    // Extract the course ID from the URL
+    const url = window.location.href;
+    const courseId = url.substring(url.lastIndexOf("/") + 1);
+    
+    try {
+      // Send a POST request to the endpoint with the message text
+      const response = await fetch(`http://127.0.0.1:8000/chat/${courseId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question: messageText })
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      // Get the response data
+      const responseData = await response.json();
+      console.log(responseData);
+      // Add the actual response from the backend to the messages state
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { user: "TA", text: responseData.result }
+      ]);
+    } catch (error) {
+      console.error("Error:", error);
+  
+      // Add an error message to the messages state
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { user: "TA", text: "An error occurred while processing your request." }
+      ]);
+    }
+  };
 
   return (
     <>

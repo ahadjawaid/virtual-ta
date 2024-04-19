@@ -20,9 +20,9 @@ function classNames(...classes: (string | undefined)[]): string {
 
 const Sidebar = () => {
     const [teams, setTeams] = useState<Team[]>([
-        { id: 1, name: 'CS 4485', initial: 'C', current: false, href: '/class/CS-4485' },
-        { id: 2, name: 'CS 4365', initial: 'C', current: false, href: '/class/CS-4365' },
-        { id: 3, name: 'CS 4314', initial: 'C', current: false, href: '/class/CS-4314' },
+        { id: 1, name: 'CS2305.002', initial: 'C', current: false, href: '/class/CS2305.002' },
+        { id: 2, name: 'LANG1311.001', initial: 'C', current: false, href: '/class/LANG1311.001' },
+        { id: 3, name: 'CS4485.0w1', initial: 'C', current: false, href: '/class/CS4485.0w1' },
     ]);
 
     const [showInput, setShowInput] = useState(false);

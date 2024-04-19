@@ -9,6 +9,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from transformers import BitsAndBytesConfig
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 from utils import chroma_client
@@ -17,6 +18,7 @@ load_dotenv()
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
 app = Flask(__name__)
+CORS(app)
 
 def get_data(course: str):
 
@@ -106,7 +108,7 @@ def inference(course, question):
 
    return jsonify({"message": ans["result"]})
 
-@app.route("/chat/<course>")
+@app.route("/chat/<course>", methods=['GET', 'POST'])
 def chat(course: str):
    response = {}
 
@@ -119,7 +121,7 @@ def chat(course: str):
       qa = agent(db, llm)
       
       if request.method == 'POST':
-         question = request.form['question']
+         question = request.json.get('question')
       else:
          question = "Hello! Please explain how to contact the professor."
 
