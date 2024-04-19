@@ -32,6 +32,12 @@ class Table:
         self.rows = []
 
 def read_pdf(path: str) -> str:
+    filename = Path(path).stem
+    path = os.path.join(base_path, "output", f"{filename}_output.zip")
+    
+    if os.path.exists(path=path):
+        return path
+
     try:
         # Initial setup, create credentials instance.
         credentials = Credentials.service_principal_credentials_builder(). \
@@ -141,9 +147,11 @@ def read_elements_from_zip(path) -> str:
     for index, table in enumerate(tables):
         # insert tables into the marked space
         table_text = "\nThe following is a set of row and column data:\n"
+        # Add comment headers so tables render properly
         if not table.header:
             table.header = ['<!-- -->']*len(table.rows[0])
-        table_text += tabulate(table.rows, headers=table.header, tablefmt="pipe") + "\n"
+        # convert the table object to markdown format and remove extra whitespace
+        table_text += tabulate(table.rows, headers=table.header, tablefmt="pipe").replace("   ", "") + "\n"
         text = text.replace(f"[Table:{index+1}]", table_text)
 
     return text
@@ -155,11 +163,7 @@ if __name__ == '__main__':
 
         try:
             print("Loading...")
-            output_path = os.path.join(base_path, "output", Path(filepath).stem+"_output.zip")
-            print(os.path.exists(output_path))
-            if not os.path.exists(output_path):
-                print("Calling Adobe PDF extraction...")
-                output_path = read_pdf(filepath)
+            output_path = read_pdf(filepath)
             result_text = read_elements_from_zip(output_path)
             with open(os.path.join(base_path, "output", Path(filepath).stem + "_output.md"), \
                     "w", encoding="utf-8") as f:
@@ -179,10 +183,7 @@ if __name__ == '__main__':
             for filepath in [f for f in filenames if f.endswith(".pdf")]:
                 try:
                     print("Parsing:", filepath)
-                    output_path = os.path.join(base_path, "output", Path(filepath).stem+"_output.zip")
-                    if not os.path.exists(output_path):
-                        print("Calling Adobe PDF extraction...")
-                        output_path = read_pdf(os.path.join(root,filepath))
+                    output_path = read_pdf(os.path.join(root,filepath))
                     result_text = read_elements_from_zip(output_path)
                     with open(os.path.join(base_path, "output", Path(filepath).stem + "_output.md"), \
                             "w", encoding="utf-8") as f:
