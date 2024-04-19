@@ -15,6 +15,9 @@ client = chromadb.PersistentClient(path=DB_PATH)
 embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 
 def get_collection(course: str) -> Chroma:
+    return client.get_collection(course)
+
+def get_or_create_collection(course: str) -> Chroma:
     return Chroma(
         persist_directory=DB_PATH,
         embedding_function=embeddings,
@@ -27,7 +30,7 @@ def add_to_collection(course: str, documents: list[Document]) -> None:
     """
     Adds Documents to a collection in the Chroma DB
     """
-    vectorstore = get_collection(course=course)
+    vectorstore = get_or_create_collection(course=course)
     vectorstore.add_documents(documents=documents)
 
 def clear_collection(course: str) -> None:
@@ -46,6 +49,7 @@ def delete_collection(course: str) -> None:
     ** The local file may not be deleted
     """
     client.delete_collection(course)
+    print(f"Collection {course} deleted.")
 
 def collection_count(course: str) -> int:
     """
@@ -59,3 +63,11 @@ def list_collections() -> list[str]:
     Returns list of collections in db
     """
     return [col.name for col in client.list_collections()]
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) == 3:
+        if sys.argv[1] == 'rm':
+            delete_collection(sys.argv[2])
+    else:
+        print(list_collections())
