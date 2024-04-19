@@ -15,7 +15,11 @@ client = chromadb.PersistentClient(path=DB_PATH)
 embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 
 def get_collection(course: str) -> Chroma:
-    return client.get_collection(course)
+    try:
+        client.get_collection(course)
+        return get_or_create_collection(course=course)
+    except:
+        raise Exception("Collection does not exist")
 
 def get_or_create_collection(course: str) -> Chroma:
     return Chroma(

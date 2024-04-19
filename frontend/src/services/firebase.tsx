@@ -23,7 +23,8 @@ export const userFriendlyErrorCodes: any = {
     "auth/operation-not-allowed": "This operation is not allowed.",
     "auth/weak-password": "Password is too weak."
 }
-
+/*
 if (true) {
     connectAuthEmulator(auth, "http://127.0.0.1:9099");
 }
+*/

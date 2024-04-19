@@ -1,0 +1,5 @@
+.add-team {
+    display: flex;
+    flex-wrap: nowrap;
+    border: 2px solid red;
+}
