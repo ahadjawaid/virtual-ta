@@ -39,17 +39,27 @@ const Sidebar = () => {
         setShowInput(false); // Hide input field after adding team
     };
 
+    // Delete team function idk if there is a db that manages the teams
+    const deleteTeam = (teamId: number) => {
+        // filtering out the team with the specified id and it creates a new team
+        setTeams(teams.filter(team => team.id !== teamId));
+        setIsModalOpen(false); // close modal
+    }
+
     // State to manage the position of the modal
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleEllipsisClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
+
+    const handleEllipsisClick = (teamId: number) => (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
+        setCurrentTeamId(teamId);
         const buttonRect = event.currentTarget.getBoundingClientRect();
 
         setModalPosition({
             x: buttonRect.left,
-            y: buttonRect.bottom,
+            y: buttonRect.bottom + window.scrollY,
         });
 
         setIsModalOpen(true);
@@ -128,7 +138,11 @@ const Sidebar = () => {
                                             <span className="truncate">{team.name}</span>
                                         </a>
                                         <button
-                                            onClick={(event) => handleEllipsisClick(event)}
+                                            onClick={(event) => {
+                                                event.preventDefault();
+                                                // Call handleEllipsisClick with the correct teamId
+                                                handleEllipsisClick(team.id)(event);
+                                            }}
                                             className="opacity-0 group-hover:opacity-100 focus:opacity-100"
                                             aria-label="Options"
                                         >
@@ -143,7 +157,12 @@ const Sidebar = () => {
                                     >
                                         <ul className="text-gray-700">
                                             <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rename</li>
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Delete</li>
+                                            <li
+                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => currentTeamId && deleteTeam(currentTeamId)} // delete using the curr team id
+                                            >
+                                                Delete
+                                            </li>
                                         </ul>
                                     </div>
                                     )}
