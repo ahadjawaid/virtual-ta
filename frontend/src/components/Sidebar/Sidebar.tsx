@@ -39,6 +39,24 @@ const Sidebar = () => {
         setShowInput(false); // Hide input field after adding team
     };
 
+    // renaming the teams. might have to connect to db that manages the teams so the changes are live
+    const [newTeamName, setNewTeamName] = useState<string>('');
+    const [renamingTeamId, setRenamingTeamId] = useState<number | null>(null);
+
+    const renameTeam = (teamId: number, newName: string) => {
+        setTeams(teams.map(team => {
+            if (team.id === teamId) {
+                return { ...team, name: newName, initial: newName.charAt(0) };
+            }
+            return team;
+        }));
+        setIsModalOpen(false); // hide modal
+        setRenamingTeamId(null); // hide input field
+        setNewTeamName(''); // reset the temporary new name state
+    };
+
+
+
     // Delete team function idk if there is a db that manages the teams
     const deleteTeam = (teamId: number) => {
         // filtering out the team with the specified id and it creates a new team
@@ -125,18 +143,35 @@ const Sidebar = () => {
                             <ul role="list" className="-mx-2 mt-2 space-y-1">
                                 {teams.map((team) => (
                                     <li key={team.name} className="group flex items-center justify-between rounded-md p-2 text-sm font-semibold leading-6 hover:bg-indigo-700">
-                                        <a
-                                            href={team.href}
-                                            className={classNames(
-                                                team.current ? 'bg-indigo-700 text-white' : 'text-indigo-200 hover:text-white hover:bg-indigo-700',
-                                                'flex items-center space-x-3'
-                                            )}
-                                        >
-                                            <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
-                                                {team.initial}
-                                            </span>
-                                            <span className="truncate">{team.name}</span>
-                                        </a>
+                                        {renamingTeamId === team.id ? (
+                                            // input box will appear when rename button is clicked
+                                            <input
+                                                type="text"
+                                                value={newTeamName}
+                                                onChange={(e) => setNewTeamName(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        renameTeam(team.id, newTeamName);
+                                                    }
+                                                }}
+                                                className="px-2 py-1 rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500 "
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            // display teams
+                                            <a
+                                                href={team.href}
+                                                className={classNames(
+                                                    team.current ? 'bg-indigo-700 text-white' : 'text-indigo-200 hover:text-white hover:bg-indigo-700',
+                                                    'flex items-center space-x-3'
+                                                )}
+                                            >
+                                                <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                                                    {team.initial}
+                                                </span>
+                                                <span className="truncate">{team.name}</span>
+                                            </a>
+                                        )}
                                         <button
                                             onClick={(event) => {
                                                 event.preventDefault();
@@ -156,7 +191,14 @@ const Sidebar = () => {
                                         ref={modalRef}
                                     >
                                         <ul className="text-gray-700">
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rename</li>
+                                            <li
+                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => {
+                                                    setRenamingTeamId(currentTeamId);
+                                                    setIsModalOpen(false);
+                                                }}
+                                            >
+                                                Rename</li>
                                             <li
                                                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                                                 onClick={() => currentTeamId && deleteTeam(currentTeamId)} // delete using the curr team id
