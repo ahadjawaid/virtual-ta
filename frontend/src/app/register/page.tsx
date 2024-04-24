@@ -52,7 +52,7 @@ export default function Page() {
     <AuthOutlet>
       <div className="flex flex-col gap-y-2">
         <h2 className="text-lg font-semibold text-gray-900">
-          Sign up to upvote!
+          Sign up to VirtualTA!
         </h2>
 
         <p className="text-sm text-gray-700">

@@ -6,6 +6,11 @@ export function getOppositeUser(user: User): User {
   return user === "TA" ? "student" : "TA";
 }
 
+export function getCourseId(): String {
+  const url = window.location.href;
+  const courseId = url.substring(url.lastIndexOf("/") + 1);
+  return courseId
+}
 export type User = "student" | "TA";
 
 export type Message = {
@@ -22,6 +27,30 @@ function convertToMessage(data: any): Message {
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
+  // Extract the course ID from the URL
+  const [courseId, setCourseId] = useState("");
+
+  useEffect(() => {
+    // Function to extract course ID from the URL
+    const getCourseId = () => {
+      const url = window.location.href;
+      const courseId = url.substring(url.lastIndexOf("/") + 1);
+      return courseId;
+    }
+
+    // Set the initial course ID when the component mounts
+    setCourseId(getCourseId());
+
+    // Update the course ID whenever the URL changes
+    const handleUrlChange = () => {
+      setCourseId(getCourseId());
+    };
+
+    window.addEventListener("popstate", handleUrlChange);
+    return () => {
+      window.removeEventListener("popstate", handleUrlChange);
+    };
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   const onSubmitMessage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -76,7 +105,7 @@ export default function ChatInterface() {
       <div className='chat-container'>
         <div className="flex justify-between">
           <h2 className="text-xl font-semibold leading-6 text-gray-900">
-            Virtual TA
+            {courseId} Virtual TA
           </h2>
         </div>
       <div className="form-container bg-gray-300 lg:fixed lg:bottom-32 lg:right-100 lg:top-28 lg:w-8/12 lg:overflow-y-auto">
@@ -99,6 +128,7 @@ export default function ChatInterface() {
                     id="message"
                     autoComplete="off"
                     className="input-bar"
+                    placeholder="Enter your question here"
                   />
                   <button>
                     <ArrowRightIcon className="h-6 text-gray-500" />
