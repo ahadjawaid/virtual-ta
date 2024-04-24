@@ -79,14 +79,19 @@ export default function ChatInterface() {
             Virtual TA
           </h2>
         </div>
-      <div className="form-container bg-gray-300 lg:fixed lg:bottom-32 lg:right-100 lg:top-28 lg:w-8/12 lg:overflow-y-auto">
+      <div className="form-container bg-white-100 lg:fixed lg:bottom-32 lg:right-100 lg:top-28 lg:w-8/12 lg:overflow-y-auto border-4 border-gray-200 rounded-lg">
         {messages.map((message, index) => (
-          <div key={index} className="p-3">
-            <p className="text-md">
-              <span className={`font-semibold capitalize ${message.user === "TA" ? "text-blue-600" : "text-slate-900"}`}>{message.user}: </span>
-              {message.text}
-            </p>
-          </div>
+            <div
+                key={index}
+                className={`p-3 ${message.user === "TA" ? "justify-start" : "justify-end"} flex`}
+            >
+              <p
+                  className={`text-md rounded-lg px-4 py-2 ${message.user === "TA" ? "bg-indigo-100 text-blue-600" : "bg-gray-200 text-slate-900"} max-w-xs`}
+              >
+                <span className="font-semibold capitalize">{message.user}: </span>
+                {message.text}
+              </p>
+            </div>
         ))}
          <div className="submit-bar">
           <form onSubmit={onSubmitMessage}>
@@ -99,8 +104,9 @@ export default function ChatInterface() {
                     id="message"
                     autoComplete="off"
                     className="input-bar"
+                    placeholder="Enter your message"
                   />
-                  <button>
+                  <button className="pl-2">
                     <ArrowRightIcon className="h-6 text-gray-500" />
                   </button>
                 </div>
