@@ -73,7 +73,7 @@ def agent(db, llm):
    chain_type_kwargs = {"prompt": PROMPT}
 
    retriever = db.as_retriever(
-      search_kwargs = {'k': 7}, # Top 3 similar to question
+      search_kwargs = {'k': 15}, # Top 3 similar to question
       chain_type_kwargs = chain_type_kwargs,
       return_source_documents = True
    )
@@ -121,15 +121,15 @@ def chat(course: str):
       qa = agent(db, llm)
       
       if request.method == 'POST':
-         question = request.json.get('question')
+         question = request.json['question']
       else:
          question = "Hello! Please explain how to contact the professor."
 
       ans = qa({'query':question})
-      docs = db.similarity_search(question, k=7)
+      docs = db.similarity_search(question, k=15)
       response["result"] = ans["result"]
       response["prompt"] = {
-         "context":[doc.page_content for doc in docs],
+         #"context":[doc.page_content for doc in docs],
          "question": question,
                            }
    except Exception as e:
