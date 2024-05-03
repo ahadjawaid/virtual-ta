@@ -1,5 +1,5 @@
 import { useState, KeyboardEvent, useRef, useEffect, MouseEvent } from 'react';
-import { HomeIcon, Cog6ToothIcon, EllipsisHorizontalIcon} from '@heroicons/react/24/outline';
+import { HomeIcon, Cog6ToothIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import Logo from '@/components/Logo';
 
 const navigation = [
@@ -19,12 +19,11 @@ function classNames(...classes: (string | undefined)[]): string {
 }
 
 const Sidebar = () => {
-    const [teams, setTeams] = useState<Team[]>([
-        { id: 1, name: 'CS2305.002', initial: 'C', current: false, href: '/class/CS2305.002' },
-        { id: 2, name: 'LANG1311.001', initial: 'C', current: false, href: '/class/LANG1311.001' },
-        { id: 3, name: 'CS4485.0w1', initial: 'C', current: false, href: '/class/CS4485.0w1' },
-    ]);
-
+    const [teams, setTeams] = useState<Team[]>(() => {
+        const storedTeams = localStorage.getItem('teams');
+        return storedTeams ? JSON.parse(storedTeams) : [];
+    });
+    
     const [showInput, setShowInput] = useState(false);
 
     const addTeam = (newTeamName: string) => {
@@ -33,23 +32,62 @@ const Sidebar = () => {
             name: newTeamName,
             initial: newTeamName.charAt(0),
             current: false,
-            href: `/class/${newTeamName.split(' ')[0]}-${newTeamName.split(' ')[1]}`,
+            href: `/class/${newTeamName.split(' ')[0]}`,
         };
-        setTeams(prevTeams => [...prevTeams, newTeam]);
+        const updatedTeams = [...teams, newTeam];
+        setTeams(updatedTeams);
+        localStorage.setItem('teams', JSON.stringify(updatedTeams)); // Save to local storage
         setShowInput(false); // Hide input field after adding team
     };
+
+    // renaming the teams. might have to connect to db that manages the teams so the changes are live
+    const [newTeamName, setNewTeamName] = useState<string>('');
+    const [renamingTeamId, setRenamingTeamId] = useState<number | null>(null);
+
+    const renameTeam = (teamId: number, newName: string) => {
+        setTeams(teams.map(team => {
+            if (team.id === teamId) {
+                return { ...team, name: newName, initial: newName.charAt(0) };
+            }
+            return team;
+        }));
+        setIsModalOpen(false); // hide modal
+        setRenamingTeamId(null); // hide input field
+        setNewTeamName(''); // reset the temporary new name state
+    };
+
+    const deleteTeam = (teamId: number) => {
+        // Find the index of the team with the specified id
+        const teamIndex = teams.findIndex(team => team.id === teamId);
+        if (teamIndex !== -1) {
+            // Remove the team from the teams array
+            const updatedTeams = [...teams];
+            updatedTeams.splice(teamIndex, 1);
+            setTeams(updatedTeams);
+            
+            // Update local storage with the updated teams array
+            localStorage.setItem('teams', JSON.stringify(updatedTeams));
+    
+            // Close modal
+            setIsModalOpen(false);
+        }
+    }
+    
 
     // State to manage the position of the modal
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleEllipsisClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const [currentTeamId, setCurrentTeamId] = useState<number | null>(null);
+
+    const handleEllipsisClick = (teamId: number) => (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
+        setCurrentTeamId(teamId);
         const buttonRect = event.currentTarget.getBoundingClientRect();
 
         setModalPosition({
             x: buttonRect.left,
-            y: buttonRect.bottom,
+            y: buttonRect.bottom + window.scrollY,
         });
 
         setIsModalOpen(true);
@@ -115,20 +153,41 @@ const Sidebar = () => {
                             <ul role="list" className="-mx-2 mt-2 space-y-1">
                                 {teams.map((team) => (
                                     <li key={team.name} className="group flex items-center justify-between rounded-md p-2 text-sm font-semibold leading-6 hover:bg-indigo-700">
-                                        <a
-                                            href={team.href}
-                                            className={classNames(
-                                                team.current ? 'bg-indigo-700 text-white' : 'text-indigo-200 hover:text-white hover:bg-indigo-700',
-                                                'flex items-center space-x-3'
-                                            )}
-                                        >
-                                            <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
-                                                {team.initial}
-                                            </span>
-                                            <span className="truncate">{team.name}</span>
-                                        </a>
+                                        {renamingTeamId === team.id ? (
+                                            // input box will appear when rename button is clicked
+                                            <input
+                                                type="text"
+                                                value={newTeamName}
+                                                onChange={(e) => setNewTeamName(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        renameTeam(team.id, newTeamName);
+                                                    }
+                                                }}
+                                                className="px-2 py-1 rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500 "
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            // display teams
+                                            <a
+                                                href={team.href}
+                                                className={classNames(
+                                                    team.current ? 'bg-indigo-700 text-white' : 'text-indigo-200 hover:text-white hover:bg-indigo-700',
+                                                    'flex items-center space-x-3'
+                                                )}
+                                            >
+                                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                                                    {team.initial}
+                                                </span>
+                                                <span className="truncate">{team.name}</span>
+                                            </a>
+                                        )}
                                         <button
-                                            onClick={(event) => handleEllipsisClick(event)}
+                                            onClick={(event) => {
+                                                event.preventDefault();
+                                                // Call handleEllipsisClick with the correct teamId
+                                                handleEllipsisClick(team.id)(event);
+                                            }}
                                             className="opacity-0 group-hover:opacity-100 focus:opacity-100"
                                             aria-label="Options"
                                         >
@@ -142,8 +201,20 @@ const Sidebar = () => {
                                         ref={modalRef}
                                     >
                                         <ul className="text-gray-700">
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rename</li>
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Delete</li>
+                                            <li
+                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => {
+                                                    setRenamingTeamId(currentTeamId);
+                                                    setIsModalOpen(false);
+                                                }}
+                                            >
+                                                Rename</li>
+                                            <li
+                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => currentTeamId && deleteTeam(currentTeamId)} // delete using the curr team id
+                                            >
+                                                Delete
+                                            </li>
                                         </ul>
                                     </div>
                                     )}
@@ -155,7 +226,7 @@ const Sidebar = () => {
                                         <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
                                             +
                                         </span>
-                                        <span>Add Team</span>
+                                        <span>Add Course</span>
                                     </li>
                                 )}
                                 {showInput && (

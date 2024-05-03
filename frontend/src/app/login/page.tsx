@@ -55,7 +55,7 @@ export default function Home() {
                     hover:underline">
             Sign Up&nbsp;
           </a>
-          to contribute.
+          here.
         </p>
       </div>
 
