@@ -4,8 +4,21 @@ from langchain.text_splitter import MarkdownHeaderTextSplitter
 from langchain_core.documents.base import Document
 
 def get_course(text: str) -> str:
-    course = re.search(r'([A-Z][A-Z][A-Z]?[A-Z]?\s?\d[A-Z0-9]\d\d\.[a-zA-Z0-9][a-zA-Z0-9]\d)', text)
-    return course.group().replace(" ", "") if course else ""
+    #Course Prefix, Number, Section
+    #Course Number/Section 
+    #Course
+    #Title
+    course = re.search(r'([a-zA-Z][a-zA-Z][\/\\]?[a-zA-Z]?[a-zA-Z]?[\s\-]?\d[A-Z0-9]\d\d\.[a-zA-Z0-9][a-zA-Z0-9][A-Z0-9])', text)
+    if course:
+        return course.group().replace(" ", "").replace("-", "").replace("/", "-").upper()
+    course = re.search(r'(Course|Section|Title|Number):?[\|\s]*?([a-zA-Z][a-zA-Z][\/\\]?[a-zA-Z]?[a-zA-Z]?[\s\-]?\d[A-Z0-9]\d\d)', text)
+    section = re.search(r'(Section):?[\|\s]+([A-Z0-9][A-Z0-9][A-Z0-9])', text)
+    
+    course = course.group(2).replace(" ", "").replace("-", "").replace("/", "-").upper() if course else ""
+    section = section.group(2).replace(" ", "").upper() if course and section else ""
+    if not course.startswith(section):
+        course += "."+ section
+    return course
 
 def chunk_text(text: str) -> list[Document]:
     """

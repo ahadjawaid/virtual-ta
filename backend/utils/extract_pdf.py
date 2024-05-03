@@ -33,10 +33,10 @@ class Table:
 
 def read_pdf(path: str) -> str:
     filename = Path(path).stem
-    path = os.path.join(base_path, "output", f"{filename}_output.zip")
+    output_path = os.path.join(base_path, "output", f"{filename}_output.zip")
     
-    if os.path.exists(path=path):
-        return path
+    if os.path.exists(path=output_path):
+        return output_path
 
     try:
         # Initial setup, create credentials instance.
@@ -53,17 +53,15 @@ def read_pdf(path: str) -> str:
 
         # Build ExtractPDF options and set them into the operation
         extract_pdf_options: ExtractPDFOptions = ExtractPDFOptions.builder() \
-            .with_elements_to_extract([ExtractElementType.TEXT,ExtractElementType.TABLES]) \
+            .with_elements_to_extract([ExtractElementType.TEXT]) \
             .build()
         extract_pdf_operation.set_options(extract_pdf_options)
 
         # Execute the operation.
         result: FileRef = extract_pdf_operation.execute(execution_context)
 
-        filename = Path(path).stem
-        path = os.path.join(base_path, "output", f"{filename}_output.zip")
-        result.save_as(path)
-        return path
+        result.save_as(output_path)
+        return output_path
 
     except (ServiceApiException, ServiceUsageException, SdkException) as e:
         print("Exception occurred:", e)
@@ -124,6 +122,7 @@ def read_elements_from_zip(path) -> str:
 
     text = ''
     current_table_num = ''
+    span_text = ''
     for element in data["elements"]:
         if "Text" in element:
             if "Table" in element["Path"]:
@@ -134,25 +133,31 @@ def read_elements_from_zip(path) -> str:
                     current_table_num = table_num
                     text += f"[Table:{table_num}]" + "\n"
                 continue
-            if "/H" in element["Path"]:
+            if "StyleSpan" in element["Path"]:
+                span_text += f'"{element["Text"]}"'
+            elif "/H" in element["Path"]:
                 text += "\n" \
                     + "#"*int(re.search(pattern=r"(?<=\/H)(\d+)(?=.*)", string=element["Path"]).group()) \
-                    + " " + element["Text"] +"\n"
+                    + " " + element["Text"] +"\n" + span_text
+                span_text = ''
             elif "Lbl" in element["Path"]:
-                text += element["Text"]
+                text += element["Text"] + span_text
+                span_text = ''
             else:
-                text += element["Text"] + "\n"
+                text += element["Text"] + span_text + "\n"
+                span_text = ''
 
     tables = read_tables_from_json(data=data)
-    for index, table in enumerate(tables):
-        # insert tables into the marked space
-        table_text = "\nThe following is a set of row and column data:\n"
-        # Add comment headers so tables render properly
-        if not table.header:
-            table.header = ['<!-- -->']*len(table.rows[0])
-        # convert the table object to markdown format and remove extra whitespace
-        table_text += tabulate(table.rows, headers=table.header, tablefmt="pipe").replace("   ", "") + "\n"
-        text = text.replace(f"[Table:{index+1}]", table_text)
+    if tables:
+        for index, table in enumerate(tables):
+            # insert tables into the marked space
+            table_text = "\nThe following is a set of row and column data:\n"
+            # Add comment headers so tables render properly
+            if not table.header and table.rows:
+                table.header = ['<!-- -->']*len(table.rows[0])
+            # convert the table object to markdown format and remove extra whitespace
+            table_text += tabulate(table.rows, headers=table.header, tablefmt="pipe").replace("   ", "") + "\n"
+            text = text.replace(f"[Table:{index+1}]", table_text)
 
     return text
 

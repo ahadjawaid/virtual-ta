@@ -13,6 +13,8 @@ def process_pdf(pdf_path):
     # Get the course data
     print("Preprocessing:")
     course_id = indexer.get_course(extracted_data)
+    if not course_id:
+        raise Exception("Course ID not found in syllabus")
     print("Course:", course_id)
 
     # Chunk text
@@ -44,7 +46,10 @@ def main():
 
     if os.path.isdir(pdf_path):
         for f in [file for file in os.listdir(pdf_path) if file.endswith(".pdf")]:
-            process_pdf(f)
+            try:
+                process_pdf(os.path.join(pdf_path, f))
+            except Exception as e:
+                print("Failed to process syllabus. Error:", e)
     elif pdf_path.endswith(".pdf"):
         process_pdf(pdf_path)
     else:
